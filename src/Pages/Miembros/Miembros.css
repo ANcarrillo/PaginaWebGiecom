@@ -1,0 +1,273 @@
+/* ===== GIECOM - Miembros.css | Paleta Verde Amazónica ===== */
+
+/* ===== HERO ===== */
+.miembros-hero {
+    min-height: 42vh;
+    padding-top: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background-color: #0a1f12;
+    background-size: cover;
+    background-position: center;
+}
+
+.miembros-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        155deg,
+        rgba(5, 18, 10, 0.92) 0%,
+        rgba(5, 18, 10, 0.70) 50%,
+        rgba(27, 67, 50, 0.45) 100%
+    );
+}
+
+.miembros-hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 3rem 2rem;
+    max-width: 700px;
+    animation: fadeUp 0.9s ease both;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* ===== SECCIÓN ===== */
+.miembros-section { background: #f0f4f1; }
+
+/* ===== GRID ===== */
+.miembros-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* ===== TARJETA ===== */
+.miembro-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 2.5rem 1.75rem 2rem;
+    box-shadow: 0 6px 28px rgba(27, 67, 50, 0.1);
+    border-top: 4px solid #1B4332;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.6rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.miembro-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 18px 48px rgba(27, 67, 50, 0.18);
+}
+
+/* Avatar */
+.miembro-avatar {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1B4332 0%, #2d6a4f 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    border: 3px solid #D4A017;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.miembro-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.miembro-avatar span {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.05em;
+}
+
+.miembro-nombre {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1B4332;
+    line-height: 1.3;
+    margin-top: 0.25rem;
+}
+
+.miembro-rol {
+    font-family: 'Lora', serif;
+    font-size: 0.88rem;
+    font-style: italic;
+    color: #6b7c6e;
+    line-height: 1.5;
+}
+
+.miembro-divider {
+    width: 36px; height: 3px;
+    background: linear-gradient(90deg, #1B4332, #D4A017);
+    border-radius: 3px;
+    margin: 0.4rem 0;
+}
+
+.miembro-correo {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: #6b7c6e;
+    text-decoration: none;
+    transition: color 0.2s;
+    word-break: break-all;
+}
+
+.miembro-correo svg {
+    width: 14px; height: 14px;
+    flex-shrink: 0;
+    color: #1B4332;
+}
+
+.miembro-correo:hover { color: #1B4332; }
+
+.miembro-telefono {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: #6b7c6e;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.miembro-telefono svg {
+    width: 14px; height: 14px;
+    flex-shrink: 0;
+    color: #1B4332;
+}
+
+.miembro-telefono:hover { color: #1B4332; }
+
+.miembro-cvlac {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: #1B4332;
+    padding: 0.4rem 1.1rem;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: background 0.25s, transform 0.2s;
+}
+
+.miembro-cvlac:hover {
+    background: #D4A017;
+    color: #0a1f12;
+    transform: translateY(-2px);
+}
+
+.miembros-loading {
+    text-align: center;
+    padding: 3rem;
+    color: #6b7c6e;
+    font-family: 'Lora', serif;
+    font-style: italic;
+}
+
+/* ===== HERO ELEMENTS (heredados de Home) ===== */
+.hero-badge {
+    display: inline-block;
+    background: rgba(212, 160, 23, 0.2);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.4rem 1.2rem;
+    border-radius: 50px;
+    border: 2px solid #D4A017;
+}
+
+.hero-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.hero-title span { color: #D4A017; }
+
+.hero-subtitle {
+    font-family: 'Lora', serif;
+    font-size: clamp(0.95rem, 2vw, 1.2rem);
+    font-style: italic;
+    color: rgba(255,255,255,0.85);
+}
+
+.section-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #2d6a4f;
+    margin-bottom: 0.75rem;
+}
+
+.section-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 800;
+    color: #1B4332;
+    line-height: 1.2;
+}
+
+.section-divider {
+    width: 60px; height: 4px;
+    background: linear-gradient(90deg, #1B4332, #D4A017);
+    margin: 1rem auto 0;
+    border-radius: 4px;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .miembros-grid { grid-template-columns: repeat(2, 1fr); max-width: 700px; }
+}
+
+@media (max-width: 560px) {
+    .miembros-grid { grid-template-columns: 1fr; max-width: 380px; }
+    .miembros-hero-content { padding: 2.5rem 1.25rem; }
+    .miembro-card { padding: 2rem 1.5rem 1.75rem; }
+}
