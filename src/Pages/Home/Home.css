@@ -85,11 +85,11 @@ body {
 .hero-title span { color: var(--gold); }
 
 .hero-subtitle {
-  font-family: 'Lora', serif;
-  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  font-family: 'Lora', sans-serif;
+  font-size: clamp(1rem, 3vw, 1.3rem);
   font-style: italic;
-  color: rgb(23, 21, 21);
-  margin-bottom: 1.5rem;
+  color: rgb(255, 255, 255);
+  margin-bottom: 0.8rem;
 }
 
 .hero-badge {
