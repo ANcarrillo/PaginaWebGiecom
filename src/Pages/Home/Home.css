@@ -37,7 +37,7 @@ body {
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  
+  /* Agrega tu fondo: background-image: url('/ruta/fondo.jpg'); */
 }
 
 .hero-overlay {
@@ -46,8 +46,8 @@ body {
   background: linear-gradient(
     155deg,
     rgba(5, 18, 10, 1) 0%,
-    rgba(5, 18, 10, 0.85) 50%,
-    rgba(27, 67, 50, 0.60) 100%
+    rgba(5, 18, 10, 0.90) 70%,
+    rgba(27, 67, 50, 0.90) 100%
   );
 }
 
@@ -85,11 +85,11 @@ body {
 .hero-title span { color: var(--gold); }
 
 .hero-subtitle {
-  font-family: 'Lora', sans-serif;
-  font-size: clamp(1rem, 3vw, 1.3rem);
+  font-family: 'Lora', serif;
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
   font-style: italic;
-  color: rgb(255, 255, 255);
-  margin-bottom: 0.8rem;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 1.5rem;
 }
 
 .hero-badge {
@@ -232,6 +232,7 @@ body {
   gap: 1.5rem;
   max-width: 1100px;
   margin: 0 auto;
+  align-items: stretch;
 }
 
 .proyecto-card {
@@ -242,6 +243,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  height: 100%;
   transition: transform 0.3s, background 0.3s, border-color 0.3s;
 }
 
@@ -289,6 +291,12 @@ body {
   line-height: 1.7;
   color: rgba(255,255,255,0.65);
   flex: 1;
+  /* Limitar a 3 líneas para uniformidad visual */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .proyecto-año {
@@ -414,4 +422,25 @@ body {
   .section { padding: 60px 1.25rem; }
   .mv-card { padding: 2rem 1.5rem; }
   .map-wrapper iframe { height: 280px; }
+}
+
+/* ===== LINK PROYECTO ===== */
+.proyecto-link {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #D4A017;
+    text-decoration: none;
+    transition: color 0.2s, letter-spacing 0.2s;
+}
+
+.proyecto-link:hover {
+    color: #f0c040;
+    letter-spacing: 0.08em;
+}
+
+/* ===== FIX altura tarjetas proyectos ===== */
+.proyectos-grid .animate-on-scroll {
+  height: 100%;
 }

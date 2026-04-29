@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { api } from '../../hooks/useApi'
+
+const INACTIVIDAD_MS = 5 * 60 * 1000 // 5 minutos
 import { useSite } from '../../context/SiteContext'
 import "./Admin.css"
 
@@ -19,7 +21,7 @@ function Login({ onLogin }) {
         setError(''); setLoading(true)
         const res = await api.login(form.usuario, form.password)
         setLoading(false)
-        if (res.token) { localStorage.setItem('giecom_token', res.token); onLogin() }
+        if (res.token) { sessionStorage.setItem('giecom_token', res.token); onLogin() }
         else setError(res.error || 'Credenciales incorrectas')
     }
 
@@ -68,8 +70,8 @@ function ConfirmModal({ mensaje, onConfirm, onCancel }) {
 // SECCIÓN INFORMACIÓN
 // ══════════════════════════════════════════════════════════════════════════
 function SeccionInfo() {
-    const { data, updateInfo } = useSite()
-    const [form, setForm] = useState(data.info)
+    const { info, updateInfo } = useSite()
+    const [form, setForm] = useState(info)
     const [saved, setSaved] = useState(false)
 
     const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value })
@@ -115,9 +117,9 @@ function SeccionInfo() {
 // ══════════════════════════════════════════════════════════════════════════
 // SECCIÓN PROYECTOS
 // ══════════════════════════════════════════════════════════════════════════
-const emptyProyecto = { id: null, icon: "💡", titulo: "", descripcion: "", año: new Date().getFullYear().toString(), estado: "En curso" }
+const emptyProyecto = { nombre: '', año: new Date().getFullYear().toString(), estado: 'En curso', informacion: '', link: '', icono: '💡' }
 
-function ProyectoForm({ proyecto, onSave, onCancel }) {
+function ProyectoForm({ proyecto, onSave, onCancel, loading }) {
     const [form, setForm] = useState(proyecto)
     const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
@@ -126,33 +128,38 @@ function ProyectoForm({ proyecto, onSave, onCancel }) {
             <div className="form-row">
                 <div className="form-group small">
                     <label>Ícono</label>
-                    <select name="icon" value={form.icon} onChange={handle}>
-                        {ICONOS.map(i => <option key={i} value={i}>{i}</option>)}
+                    <select name="icono" value={form.icono} onChange={handle}>
+                        {["💡","🤖","🌿","📡","🔐","📊","🔬","🧬","💻","🛰️","🧪","📱"].map(i => <option key={i} value={i}>{i}</option>)}
                     </select>
                 </div>
                 <div className="form-group">
-                    <label>Título *</label>
-                    <input name="titulo" value={form.titulo} onChange={handle} placeholder="Nombre del proyecto" />
+                    <label>Nombre del proyecto *</label>
+                    <input name="nombre" value={form.nombre} onChange={handle} placeholder="Nombre del proyecto" />
                 </div>
                 <div className="form-group small">
-                    <label>Año</label>
+                    <label>Año *</label>
                     <input name="año" value={form.año} onChange={handle} placeholder="2025" />
                 </div>
                 <div className="form-group small">
                     <label>Estado</label>
                     <select name="estado" value={form.estado} onChange={handle}>
-                        {ESTADOS.map(e => <option key={e} value={e}>{e}</option>)}
+                        <option value="En curso">En curso</option>
+                        <option value="Finalizado">Finalizado</option>
                     </select>
                 </div>
             </div>
             <div className="form-group">
-                <label>Descripción</label>
-                <textarea name="descripcion" rows={3} value={form.descripcion} onChange={handle} placeholder="Descripción del proyecto..." />
+                <label>Información</label>
+                <textarea name="informacion" rows={3} value={form.informacion} onChange={handle} placeholder="Descripción del proyecto..." />
+            </div>
+            <div className="form-group">
+                <label>Link (descarga o página)</label>
+                <input name="link" value={form.link} onChange={handle} placeholder="https://..." />
             </div>
             <div className="item-form-actions">
                 <button className="btn-cancel" onClick={onCancel}>Cancelar</button>
-                <button className="btn-save" onClick={() => { if (!form.titulo.trim()) return; onSave({ ...form, id: form.id || Date.now() }) }}>
-                    Guardar
+                <button className="btn-save" disabled={loading || !form.nombre.trim() || !form.año} onClick={() => onSave(form)}>
+                    {loading ? 'Guardando...' : 'Guardar'}
                 </button>
             </div>
         </div>
@@ -160,20 +167,46 @@ function ProyectoForm({ proyecto, onSave, onCancel }) {
 }
 
 function SeccionProyectos() {
-    const { data, updateProyectos } = useSite()
-    const [proyectos, setProyectos] = useState(data.proyectos)
-    const [editando, setEditando]   = useState(null)
-    const [agregando, setAgregando] = useState(false)
-    const [confirmId, setConfirmId] = useState(null)
-    const [toast, setToast]         = useState('')
+    const [proyectos, setProyectos]     = useState([])
+    const [cargando, setCargando]       = useState(true)
+    const [editando, setEditando]       = useState(null)
+    const [agregando, setAgregando]     = useState(false)
+    const [confirmId, setConfirmId]     = useState(null)
+    const [loadingForm, setLoadingForm] = useState(false)
+    const [toast, setToast]             = useState('')
 
     const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2500) }
 
-    const guardar = (lista) => { setProyectos(lista); updateProyectos(lista) }
+    useEffect(() => {
+        api.getProyectos()
+            .then(d => setProyectos(Array.isArray(d) ? d : []))
+            .finally(() => setCargando(false))
+    }, [])
 
-    const onSaveEdit = (p) => { guardar(proyectos.map(x => x.id === p.id ? p : x)); setEditando(null); showToast('✓ Proyecto actualizado') }
-    const onSaveNew  = (p) => { guardar([...proyectos, p]); setAgregando(false); showToast('✓ Proyecto agregado') }
-    const onDelete   = (id) => { guardar(proyectos.filter(x => x.id !== id)); setConfirmId(null); showToast('✓ Proyecto eliminado') }
+    const handleCrear  = async (form) => {
+        setLoadingForm(true)
+        const res = await api.crearProyecto(form)
+        setLoadingForm(false)
+        if (res.id) { setProyectos([...proyectos, res]); setAgregando(false); showToast('✓ Proyecto agregado') }
+        else showToast('Error: ' + (res.error || 'desconocido'))
+    }
+
+    const handleEditar = async (form) => {
+        setLoadingForm(true)
+        const res = await api.editarProyecto(editando.id, form)
+        setLoadingForm(false)
+        if (res.id) { setProyectos(proyectos.map(p => p.id === res.id ? res : p)); setEditando(null); showToast('✓ Proyecto actualizado') }
+        else showToast('Error: ' + (res.error || 'desconocido'))
+    }
+
+    const handleEliminar = async (id) => {
+        await api.eliminarProyecto(id)
+        setProyectos(proyectos.filter(p => p.id !== id))
+        setConfirmId(null)
+        showToast('✓ Proyecto eliminado')
+    }
+
+    if (cargando) return <p style={{ padding: '2rem', color: '#6b7c6e' }}>Cargando proyectos...</p>
 
     return (
         <div className="admin-section">
@@ -186,13 +219,18 @@ function SeccionProyectos() {
                 {proyectos.map(p => (
                     <div key={p.id}>
                         {editando?.id === p.id ? (
-                            <ProyectoForm proyecto={editando} onSave={onSaveEdit} onCancel={() => setEditando(null)} />
+                            <ProyectoForm
+                                proyecto={{ ...p, link: p.link || '', informacion: p.informacion || '' }}
+                                onSave={handleEditar}
+                                onCancel={() => setEditando(null)}
+                                loading={loadingForm}
+                            />
                         ) : (
                             <div className="item-row">
-                                <span className="item-icon">{p.icon}</span>
+                                <span className="item-icon">{p.icono}</span>
                                 <div className="item-info">
-                                    <strong>{p.titulo}</strong>
-                                    <span>{p.descripcion}</span>
+                                    <strong>{p.nombre}</strong>
+                                    <span>{p.informacion}</span>
                                 </div>
                                 <div className="item-meta">
                                     <span className={`estado-badge ${p.estado === 'En curso' ? 'en-curso' : 'finalizado'}`}>{p.estado}</span>
@@ -209,15 +247,13 @@ function SeccionProyectos() {
             </div>
 
             {agregando ? (
-                <ProyectoForm proyecto={emptyProyecto} onSave={onSaveNew} onCancel={() => setAgregando(false)} />
+                <ProyectoForm proyecto={emptyProyecto} onSave={handleCrear} onCancel={() => setAgregando(false)} loading={loadingForm} />
             ) : (
-                <button className="btn-add" onClick={() => { setEditando(null); setAgregando(true) }}>
-                    + Agregar proyecto
-                </button>
+                <button className="btn-add" onClick={() => { setEditando(null); setAgregando(true) }}>+ Agregar proyecto</button>
             )}
 
             {toast && <p className="save-toast">{toast}</p>}
-            {confirmId && <ConfirmModal mensaje="¿Eliminar este proyecto?" onConfirm={() => onDelete(confirmId)} onCancel={() => setConfirmId(null)} />}
+            {confirmId && <ConfirmModal mensaje="¿Eliminar este proyecto?" onConfirm={() => handleEliminar(confirmId)} onCancel={() => setConfirmId(null)} />}
         </div>
     )
 }
@@ -409,13 +445,41 @@ const tabs = [
 ]
 
 const Admin = () => {
-    //Activar o desactivar login
-    const [autenticado, setAutenticado] = useState(!!localStorage.getItem('giecom_token'))
+    const [autenticado, setAutenticado] = useState(!!sessionStorage.getItem('giecom_token'))
     const [tab, setTab] = useState('info')
+    const timerRef = useRef(null)
 
-    useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }) }, [])
+    const cerrarSesion = () => {
+        sessionStorage.removeItem('giecom_token')
+        setAutenticado(false)
+    }
 
-    const handleLogout = () => { localStorage.removeItem('giecom_token'); setAutenticado(false) }
+    // Reinicia el temporizador en cada acción del usuario
+    const resetTimer = () => {
+        clearTimeout(timerRef.current)
+        timerRef.current = setTimeout(() => {
+            cerrarSesion()
+            alert('Sesión cerrada por inactividad')
+        }, INACTIVIDAD_MS)
+    }
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' })
+    }, [])
+
+    // Activar/desactivar el temporizador según autenticación
+    useEffect(() => {
+        if (!autenticado) return
+        const eventos = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart']
+        eventos.forEach(e => window.addEventListener(e, resetTimer))
+        resetTimer()
+        return () => {
+            clearTimeout(timerRef.current)
+            eventos.forEach(e => window.removeEventListener(e, resetTimer))
+        }
+    }, [autenticado])
+
+    const handleLogout = () => cerrarSesion()
 
     if (!autenticado) return <Login onLogin={() => setAutenticado(true)} />
 

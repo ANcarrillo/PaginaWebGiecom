@@ -8,7 +8,7 @@
 //              ej: 'https://api.giecom.uniamazonia.edu.co/api'
 const BASE = 'http://localhost:4000/api'
 
-const getToken = () => localStorage.getItem('giecom_token')
+const getToken = () => sessionStorage.getItem('giecom_token')
 
 const headers = (auth = false) => ({
     'Content-Type': 'application/json',
@@ -24,6 +24,30 @@ export const api = {
             body: JSON.stringify({ usuario, password }),
         }).then(r => r.json()),
 
+
+    // Proyectos
+    getProyectos: () =>
+        fetch(`${BASE}/proyectos`, { headers: headers() }).then(r => r.json()),
+
+    crearProyecto: (data) =>
+        fetch(`${BASE}/proyectos`, {
+            method: 'POST',
+            headers: headers(true),
+            body: JSON.stringify(data),
+        }).then(r => r.json()),
+
+    editarProyecto: (id, data) =>
+        fetch(`${BASE}/proyectos/${id}`, {
+            method: 'PUT',
+            headers: headers(true),
+            body: JSON.stringify(data),
+        }).then(r => r.json()),
+
+    eliminarProyecto: (id) =>
+        fetch(`${BASE}/proyectos/${id}`, {
+            method: 'DELETE',
+            headers: headers(true),
+        }).then(r => r.json()),
     // Subir imagen — devuelve { url }
     uploadImagen: (file) => {
         const formData = new FormData()

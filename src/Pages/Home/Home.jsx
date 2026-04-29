@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react'
 import logo from '../../assets/giecom.png'
+import { useSite } from '../../context/SiteContext'
+import { api } from '../../hooks/useApi'
 import "./Home.css"
 import fondo from '../../assets/Fondo.png'
-import { useSite } from '../../context/SiteContext'
-
 
 function AnimatedCard({ children, delay = 0 }) {
     const ref = useRef(null)
@@ -28,13 +28,21 @@ function AnimatedCard({ children, delay = 0 }) {
         </div>
     )
 }
+
 const Home = () => {
-    const { data } = useSite()
-    const { info, proyectos } = data
+    const { info } = useSite()
+    const [proyectos, setProyectos] = React.useState([])
+
+    React.useEffect(() => {
+        api.getProyectos()
+            .then(d => setProyectos(Array.isArray(d) ? d : []))
+            .catch(() => setProyectos([]))
+    }, [])
+
     return (
         <>
             {/* ===== HERO ===== */}
-            <section id="Inicio" className="hero" style={{ backgroundImage: `url(${fondo})` }}>
+           <section id="Inicio" className="hero" style={{ backgroundImage: `url(${fondo})` }}>
                 <div className="hero-overlay" />
                 <div className="hero-content">
                     <img src={logo} alt="GIECOM" className="hero-logo" />
@@ -46,7 +54,6 @@ const Home = () => {
                     <span className="hero-badge">Universidad de la Amazonia · GIECOM</span>
                 </div>
             </section>
-
 
             {/* ===== QUIÉNES SOMOS ===== */}
             <section id="Quienessomos" className="section mv-section">
@@ -93,13 +100,18 @@ const Home = () => {
                     {proyectos.map((proyecto, i) => (
                         <AnimatedCard key={proyecto.id} delay={i * 80}>
                             <div className="proyecto-card">
-                                <div className="proyecto-icon">{proyecto.icon}</div>
+                                <div className="proyecto-icon">{proyecto.icono}</div>
                                 <div className={`proyecto-estado ${proyecto.estado === "En curso" ? "en-curso" : "finalizado"}`}>
                                     {proyecto.estado}
                                 </div>
-                                <h3 className="proyecto-titulo">{proyecto.titulo}</h3>
-                                <p className="proyecto-desc">{proyecto.descripcion}</p>
+                                <h3 className="proyecto-titulo">{proyecto.nombre}</h3>
+                                <p className="proyecto-desc">{proyecto.informacion}</p>
                                 <span className="proyecto-año">📅 {proyecto.año}</span>
+                                {proyecto.link && (
+                                    <a href={proyecto.link} target="_blank" rel="noopener noreferrer" className="proyecto-link">
+                                        Ver proyecto →
+                                    </a>
+                                )}
                             </div>
                         </AnimatedCard>
                     ))}
@@ -158,58 +170,6 @@ const Home = () => {
             </section>
         </>
     )
-
 }
-const proyectos = [
-    {
-        id: 1,
-        icon: "💡",
-        titulo: "Proyecto 1",
-        descripcion: "Descripción breve del proyecto de investigación. Área temática y objetivos principales.",
-        año: "2024",
-        estado: "En curso",
-    },
-    {
-        id: 2,
-        icon: "🤖",
-        titulo: "Proyecto 2",
-        descripcion: "Descripción breve del proyecto de investigación. Área temática y objetivos principales.",
-        año: "2024",
-        estado: "En curso",
-    },
-    {
-        id: 3,
-        icon: "🌿",
-        titulo: "Proyecto 3",
-        descripcion: "Descripción breve del proyecto de investigación. Área temática y objetivos principales.",
-        año: "2023",
-        estado: "Finalizado",
-    },
-    {
-        id: 4,
-        icon: "📡",
-        titulo: "Proyecto 4",
-        descripcion: "Descripción breve del proyecto de investigación. Área temática y objetivos principales.",
-        año: "2023",
-        estado: "Finalizado",
-    },
-    {
-        id: 5,
-        icon: "🔐",
-        titulo: "Proyecto 5",
-        descripcion: "Descripción breve del proyecto de investigación. Área temática y objetivos principales.",
-        año: "2025",
-        estado: "En curso",
-    },
-    {
-        id: 6,
-        icon: "📊",
-        titulo: "Proyecto 6",
-        descripcion: "Descripción breve del proyecto de investigación. Área temática y objetivos principales.",
-        año: "2025",
-        estado: "En curso",
-    },
-]
-
 
 export default Home
