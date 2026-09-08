@@ -6,7 +6,7 @@
 // PRODUCCIÓN:  cambia por la IP o dominio donde corre el servidor
 //              ej: 'http://158.220.123.106:4000/api'
 //              ej: 'https://api.giecom.uniamazonia.edu.co/api'
-const BASE = 'http://localhost:4000/api'
+const BASE = 'https://giecom.com.co/PaginaPrincipalBack/api'
 
 const getToken = () => sessionStorage.getItem('giecom_token')
 
